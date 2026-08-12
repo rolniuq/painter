@@ -12,6 +12,7 @@ export class ImageLoader {
     if (Math.min(imgW * scale, imgH * scale) < minSize) {
       scale = minSize / Math.min(imgW, imgH);
     }
+    scale = Math.min(scale, maxSize / Math.max(imgW, imgH));
     return {
       width: Math.max(1, Math.round(imgW * scale)),
       height: Math.max(1, Math.round(imgH * scale)),

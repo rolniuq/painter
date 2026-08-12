@@ -30,6 +30,11 @@ export class App {
   async _onFile() {
     const file = this.fileInput.files[0];
     if (!file) return;
+    if (this._player) {
+      this._player.cancel();
+      this._player = null;
+    }
+    this._playing = false;
     this.statusEl.textContent = 'Loading image…';
     try {
       this.current = await this.imageLoader.load(file);
