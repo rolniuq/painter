@@ -35,7 +35,7 @@ export class EdgeDetector {
     }
 
     const highT = maxMag * this.high;
-    const lowT = highT * this.low;
+    const lowT = maxMag * this.low;
     const edgeMask = this._hysteresis(suppressed, highT, lowT, width, height);
     return { edgeMask, directions: dir, width, height };
   }
