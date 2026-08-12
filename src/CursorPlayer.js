@@ -33,9 +33,9 @@ export class CursorPlayer {
 
     this.inkCtx.lineWidth = brush.width;
     this.inkCtx.lineCap = brush.cap;
-    this.inkCtx.lineJoin = 'round';
-    this.inkCtx.strokeStyle = '#000';
-    this.inkCtx.fillStyle = '#000';
+    this.inkCtx.lineJoin = "round";
+    this.inkCtx.strokeStyle = "#000";
+    this.inkCtx.fillStyle = "#000";
   }
 
   play(commands, { onDone } = {}) {
@@ -96,7 +96,10 @@ export class CursorPlayer {
         this._prepNext();
       } else {
         const r = remaining;
-        this._move(this.cursor.x + (dx / dist) * r, this.cursor.y + (dy / dist) * r);
+        this._move(
+          this.cursor.x + (dx / dist) * r,
+          this.cursor.y + (dy / dist) * r
+        );
         remaining = 0;
       }
     }
@@ -115,7 +118,7 @@ export class CursorPlayer {
     }
     const cmd = this.commands[this.index];
     this._downAtCurrent = false;
-    if (cmd.type === 'down') {
+    if (cmd.type === "down") {
       if (this.cursor.x === cmd.x && this.cursor.y === cmd.y) {
         this.ink = true;
         this._dot(cmd.x, cmd.y);
@@ -147,8 +150,11 @@ export class CursorPlayer {
     const base = (this.brush.passes - 1) / 2;
     for (let p = 0; p < this.brush.passes; p++) {
       const passOffset = (p - base) * 0.6;
-      const jA = Math.sin(this._inkDistance * 0.12) * this.brush.jitter + passOffset;
-      const jB = Math.sin((this._inkDistance + dist) * 0.12) * this.brush.jitter + passOffset;
+      const jA =
+        Math.sin(this._inkDistance * 0.12) * this.brush.jitter + passOffset;
+      const jB =
+        Math.sin((this._inkDistance + dist) * 0.12) * this.brush.jitter +
+        passOffset;
       this.inkCtx.beginPath();
       this.inkCtx.moveTo(x0 + nx * jA, y0 + ny * jA);
       this.inkCtx.lineTo(x1 + nx * jB, y1 + ny * jB);

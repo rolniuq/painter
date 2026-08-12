@@ -1,7 +1,7 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { CursorPlayer } from '../src/CursorPlayer.js';
-import { BrushConfig } from '../src/BrushConfig.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { CursorPlayer } from "../src/CursorPlayer.js";
+import { BrushConfig } from "../src/BrushConfig.js";
 
 function makeMockCtx() {
   const calls = {
@@ -87,62 +87,66 @@ function makePlayer(raf = null) {
   };
 }
 
-test('draws a single stroke and fires onDone once', () => {
+test("draws a single stroke and fires onDone once", () => {
   const { ink, player } = makePlayer();
   let doneCount = 0;
   const commands = [
-    { type: 'down', x: 10, y: 10 },
-    { type: 'move', x: 110, y: 10 },
+    { type: "down", x: 10, y: 10 },
+    { type: "move", x: 110, y: 10 },
   ];
   player.play(commands, { onDone: () => doneCount++ });
   player.tick(1000);
   assert.equal(doneCount, 1);
   assert.equal(ink.calls.lineTo.length, 1);
-  assert.ok(ink.calls.arc >= 1, 'pen-down should stamp a dot');
+  assert.ok(ink.calls.arc >= 1, "pen-down should stamp a dot");
 });
 
-test('lifts the pen (no ink) while flying between strokes', () => {
+test("lifts the pen (no ink) while flying between strokes", () => {
   const { ink, player } = makePlayer();
   const commands = [
-    { type: 'down', x: 0, y: 0 },
-    { type: 'move', x: 0, y: 50 },
-    { type: 'down', x: 100, y: 50 },
-    { type: 'move', x: 100, y: 0 },
+    { type: "down", x: 0, y: 0 },
+    { type: "move", x: 0, y: 50 },
+    { type: "down", x: 100, y: 50 },
+    { type: "move", x: 100, y: 0 },
   ];
   player.play(commands, {});
   player.tick(1000);
-  assert.equal(ink.calls.lineTo.length, 2, 'only the two inked segments are stroked');
-  const fly = ink.calls.moveTo.find(
-    ([x0, y0]) => Math.abs(x0 - 0) < 0.5 && Math.abs(y0 - 50) < 0.5,
+  assert.equal(
+    ink.calls.lineTo.length,
+    2,
+    "only the two inked segments are stroked"
   );
-  assert.ok(!fly, 'no ink between (0,50) and (100,50)');
+  const fly = ink.calls.moveTo.find(
+    ([x0, y0]) => Math.abs(x0 - 0) < 0.5 && Math.abs(y0 - 50) < 0.5
+  );
+  assert.ok(!fly, "no ink between (0,50) and (100,50)");
 });
 
-test('onDone fires exactly once even with repeated ticks', () => {
+test("onDone fires exactly once even with repeated ticks", () => {
   const { player } = makePlayer();
   let doneCount = 0;
   const commands = [
-    { type: 'down', x: 5, y: 5 },
-    { type: 'move', x: 55, y: 5 },
+    { type: "down", x: 5, y: 5 },
+    { type: "move", x: 55, y: 5 },
   ];
   player.play(commands, { onDone: () => doneCount++ });
   for (let i = 0; i < 10; i++) player.tick(1000);
   assert.equal(doneCount, 1);
 });
 
-test('uses a raf scheduler when provided and stops the loop on cancel', () => {
+test("uses a raf scheduler when provided and stops the loop on cancel", () => {
   let rafCallback = null;
   const raf = (cb) => {
     rafCallback = cb;
   };
   const { player } = makePlayer(raf);
   const commands = [
-    { type: 'down', x: 5, y: 5 },
-    { type: 'move', x: 55, y: 5 },
+    { type: "down", x: 5, y: 5 },
+    { type: "move", x: 55, y: 5 },
   ];
   let doneCount = 0;
   player.play(commands, { onDone: () => doneCount++ });
-  assert.ok(rafCallback, 'raf should be scheduled');
+  assert.ok(rafCallback, "raf should be scheduled");
   rafCallback(100); // first frame: dt=0 (lastTime is null)
   rafCallback(10100); // dt=10000ms at 200px/s = 2000px, enough to finish ~57px path
   assert.ok(doneCount >= 1);

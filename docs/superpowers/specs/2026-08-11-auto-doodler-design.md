@@ -101,11 +101,11 @@ All processing runs in a single browser thread. Canny and contour building run s
 
 A switch above the canvas lets the user pick the style before drawing. Styles differ only by brush parameters applied to the same stroke data.
 
-| Style   | Width | Jitter | Passes | Cap    | Character                               |
-|---------|-------|--------|--------|--------|-----------------------------------------|
-| Doodle  | 2px   | yes    | 1      | round  | Playful hand-sketch wobble              |
-| Cartoon | 4px   | no     | 1      | round  | Bold smooth outlined look (default)     |
-| Sketch  | 1.5px | slight | 2 (offset) | butt | Hashed multi-pass pencil feel      |
+| Style   | Width | Jitter | Passes     | Cap   | Character                           |
+| ------- | ----- | ------ | ---------- | ----- | ----------------------------------- |
+| Doodle  | 2px   | yes    | 1          | round | Playful hand-sketch wobble          |
+| Cartoon | 4px   | no     | 1          | round | Bold smooth outlined look (default) |
+| Sketch  | 1.5px | slight | 2 (offset) | butt  | Hashed multi-pass pencil feel       |
 
 - Brush params live in a `BrushConfig` object per style: `{ width, jitter, passes, cap }`. Adding a style = adding one config.
 - Jitter applies small perpendicular noise per path segment to the ink path.

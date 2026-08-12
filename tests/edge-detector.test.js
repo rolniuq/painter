@@ -1,6 +1,6 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { EdgeDetector } from '../src/EdgeDetector.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { EdgeDetector } from "../src/EdgeDetector.js";
 
 const detector = new EdgeDetector();
 
@@ -8,7 +8,7 @@ function blankGray(width, height, fill = 255) {
   return new Uint8Array(width * height).fill(fill);
 }
 
-test('detects the boundary of a black square on a white background', () => {
+test("detects the boundary of a black square on a white background", () => {
   const width = 40;
   const height = 40;
   const gray = blankGray(width, height);
@@ -25,7 +25,7 @@ test('detects the boundary of a black square on a white background', () => {
   assert.equal(directions.length, width * height);
 });
 
-test('detects a diagonal black line', () => {
+test("detects a diagonal black line", () => {
   const width = 30;
   const height = 30;
   const gray = blankGray(width, height);
@@ -33,10 +33,10 @@ test('detects a diagonal black line', () => {
   const { edgeMask } = detector.detect({ gray, width, height });
   let count = 0;
   for (let i = 0; i < edgeMask.length; i++) count += edgeMask[i];
-  assert.ok(count > 0, 'expected edges along the diagonal');
+  assert.ok(count > 0, "expected edges along the diagonal");
 });
 
-test('detects a circular outline', () => {
+test("detects a circular outline", () => {
   const width = 40;
   const height = 40;
   const cx = 19.5;
@@ -52,13 +52,17 @@ test('detects a circular outline', () => {
   const { edgeMask } = detector.detect({ gray, width, height });
   let count = 0;
   for (let i = 0; i < edgeMask.length; i++) count += edgeMask[i];
-  assert.ok(count > 0, 'expected edges along the circle');
+  assert.ok(count > 0, "expected edges along the circle");
 });
 
-test('returns an empty mask for a blank image', () => {
+test("returns an empty mask for a blank image", () => {
   const width = 20;
   const height = 20;
-  const { edgeMask } = detector.detect({ gray: blankGray(width, height), width, height });
+  const { edgeMask } = detector.detect({
+    gray: blankGray(width, height),
+    width,
+    height,
+  });
   let count = 0;
   for (let i = 0; i < edgeMask.length; i++) count += edgeMask[i];
   assert.equal(count, 0);

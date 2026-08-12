@@ -39,16 +39,28 @@ export class ContourBuilder {
   _next(edgeMask, visited, width, height, x, y) {
     let best = null;
     for (const [dx, dy] of [
-      [-1, -1], [0, -1], [1, -1],
-      [-1, 0], [1, 0],
-      [-1, 1], [0, 1], [1, 1],
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+      [-1, 0],
+      [1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
     ]) {
       const nx = x + dx;
       const ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
       const i = ny * width + nx;
       if (!edgeMask[i] || visited[i]) continue;
-      const count = this._unvisitedNeighbors(edgeMask, visited, width, height, nx, ny);
+      const count = this._unvisitedNeighbors(
+        edgeMask,
+        visited,
+        width,
+        height,
+        nx,
+        ny
+      );
       if (!best || count < best.count) {
         best = { x: nx, y: ny, count };
       }

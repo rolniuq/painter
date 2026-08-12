@@ -20,7 +20,9 @@ export class ImageLoader {
   }
 
   static isSupportedFile(file) {
-    return Boolean(file && typeof file.type === 'string' && file.type.startsWith('image/'));
+    return Boolean(
+      file && typeof file.type === "string" && file.type.startsWith("image/")
+    );
   }
 
   static toGrayscale(imageData) {
@@ -37,28 +39,30 @@ export class ImageLoader {
 
   async load(file) {
     if (!ImageLoader.isSupportedFile(file)) {
-      throw new Error('Please choose an image file.');
+      throw new Error("Please choose an image file.");
     }
     const url = URL.createObjectURL(file);
     try {
       const img = new Image();
       await new Promise((resolve, reject) => {
         img.onload = resolve;
-        img.onerror = () => reject(new Error('Could not load image.'));
+        img.onerror = () => reject(new Error("Could not load image."));
         img.src = url;
       });
       const { width, height } = ImageLoader.downscaleDimensions(
         img.naturalWidth,
         img.naturalHeight,
         this.maxSize,
-        this.minSize,
+        this.minSize
       );
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
-      const gray = ImageLoader.toGrayscale(ctx.getImageData(0, 0, width, height));
+      const gray = ImageLoader.toGrayscale(
+        ctx.getImageData(0, 0, width, height)
+      );
       return { gray, width, height };
     } finally {
       URL.revokeObjectURL(url);

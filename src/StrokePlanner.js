@@ -24,7 +24,7 @@ export class StrokePlanner {
       for (let i = 0; i < segment.length; i++) {
         const x = this._clamp(Math.round(segment[i].x), width);
         const y = this._clamp(Math.round(segment[i].y), height);
-        commands.push({ type: i === 0 ? 'down' : 'move', x, y });
+        commands.push({ type: i === 0 ? "down" : "move", x, y });
       }
     }
   }

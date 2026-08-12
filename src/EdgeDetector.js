@@ -14,11 +14,19 @@ export class EdgeDetector {
       for (let x = 1; x < width - 1; x++) {
         const i = y * width + x;
         const gx =
-          -blurred[i - width - 1] - 2 * blurred[i - 1] - blurred[i + width - 1] +
-          blurred[i - width + 1] + 2 * blurred[i + 1] + blurred[i + width + 1];
+          -blurred[i - width - 1] -
+          2 * blurred[i - 1] -
+          blurred[i + width - 1] +
+          blurred[i - width + 1] +
+          2 * blurred[i + 1] +
+          blurred[i + width + 1];
         const gy =
-          -blurred[i - width - 1] - 2 * blurred[i - width] - blurred[i - width + 1] +
-          blurred[i + width - 1] + 2 * blurred[i + width] + blurred[i + width + 1];
+          -blurred[i - width - 1] -
+          2 * blurred[i - width] -
+          blurred[i - width + 1] +
+          blurred[i + width - 1] +
+          2 * blurred[i + width] +
+          blurred[i + width + 1];
         mag[i] = Math.hypot(gx, gy);
         dir[i] = Math.atan2(gy, gx);
       }

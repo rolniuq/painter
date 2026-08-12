@@ -29,11 +29,13 @@
 ### Task 1: Scaffold the project
 
 **Files:**
+
 - Create: `package.json`
 - Create: `.gitignore`
 - Create: `tests/smoke.test.js`
 
 **Interfaces:**
+
 - Produces: `npm test` runs `node --test tests/` for all later tasks.
 
 - [ ] **Step 1: Initialize the repo**
@@ -68,10 +70,10 @@ node_modules/
 `tests/smoke.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import test from "node:test";
+import assert from "node:assert/strict";
 
-test('test runner works', () => {
+test("test runner works", () => {
   assert.equal(1 + 1, 2);
 });
 ```
@@ -93,10 +95,12 @@ git commit -m "chore: scaffold project with node:test harness"
 ### Task 2: BrushConfig
 
 **Files:**
+
 - Create: `src/BrushConfig.js`
 - Test: `tests/brush-config.test.js`
 
 **Interfaces:**
+
 - Produces: `BrushConfig` class with constructor `{ width, jitter, passes, cap }` and static method `BrushConfig.presets()` returning `{ doodle, cartoon, sketch }`. Doodle = `{width:2, jitter:1.2, passes:1, cap:'round'}`, Cartoon = `{width:4, jitter:0, passes:1, cap:'round'}`, Sketch = `{width:1.5, jitter:0.4, passes:2, cap:'butt'}`. Consumed by `CursorPlayer` (Task 7) and `App` (Task 8).
 
 - [ ] **Step 1: Write the failing test**
@@ -104,30 +108,30 @@ git commit -m "chore: scaffold project with node:test harness"
 `tests/brush-config.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { BrushConfig } from '../src/BrushConfig.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { BrushConfig } from "../src/BrushConfig.js";
 
-test('presets exist with expected brush parameters', () => {
+test("presets exist with expected brush parameters", () => {
   const presets = BrushConfig.presets();
   assert.ok(presets.doodle);
   assert.ok(presets.cartoon);
   assert.ok(presets.sketch);
 });
 
-test('cartoon is the thick bold default', () => {
+test("cartoon is the thick bold default", () => {
   const { cartoon } = BrushConfig.presets();
   assert.equal(cartoon.width, 4);
   assert.equal(cartoon.jitter, 0);
   assert.equal(cartoon.passes, 1);
-  assert.equal(cartoon.cap, 'round');
+  assert.equal(cartoon.cap, "round");
 });
 
-test('sketch uses multiple offset passes and a butt cap', () => {
+test("sketch uses multiple offset passes and a butt cap", () => {
   const { sketch } = BrushConfig.presets();
   assert.equal(sketch.width, 1.5);
   assert.equal(sketch.passes, 2);
-  assert.equal(sketch.cap, 'butt');
+  assert.equal(sketch.cap, "butt");
 });
 ```
 
@@ -142,7 +146,7 @@ Expected: FAIL — `ERR_MODULE_NOT_FOUND` for `../src/BrushConfig.js`.
 
 ```js
 export class BrushConfig {
-  constructor({ width = 2, jitter = 0, passes = 1, cap = 'round' } = {}) {
+  constructor({ width = 2, jitter = 0, passes = 1, cap = "round" } = {}) {
     this.width = width;
     this.jitter = jitter;
     this.passes = passes;
@@ -151,9 +155,24 @@ export class BrushConfig {
 
   static presets() {
     return {
-      doodle: new BrushConfig({ width: 2, jitter: 1.2, passes: 1, cap: 'round' }),
-      cartoon: new BrushConfig({ width: 4, jitter: 0, passes: 1, cap: 'round' }),
-      sketch: new BrushConfig({ width: 1.5, jitter: 0.4, passes: 2, cap: 'butt' }),
+      doodle: new BrushConfig({
+        width: 2,
+        jitter: 1.2,
+        passes: 1,
+        cap: "round",
+      }),
+      cartoon: new BrushConfig({
+        width: 4,
+        jitter: 0,
+        passes: 1,
+        cap: "round",
+      }),
+      sketch: new BrushConfig({
+        width: 1.5,
+        jitter: 0.4,
+        passes: 2,
+        cap: "butt",
+      }),
     };
   }
 }
@@ -176,10 +195,12 @@ git commit -m "feat: add brush config presets for doodle, cartoon, sketch"
 ### Task 3: ImageLoader (pure helpers)
 
 **Files:**
+
 - Create: `src/ImageLoader.js`
 - Test: `tests/image-loader.test.js`
 
 **Interfaces:**
+
 - Produces: static `ImageLoader.downscaleDimensions(imgW, imgH, maxSize, minSize)` → `{width, height}`; static `ImageLoader.isSupportedFile(file)` → boolean; static `ImageLoader.toGrayscale(imageData)` → `Uint8Array` of luma values; instance method `async load(file)` → `{ gray, width, height }` (browser-only, not unit-tested). Consumed by `App` (Task 8).
 
 - [ ] **Step 1: Write the failing test**
@@ -187,41 +208,52 @@ git commit -m "feat: add brush config presets for doodle, cartoon, sketch"
 `tests/image-loader.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { ImageLoader } from '../src/ImageLoader.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { ImageLoader } from "../src/ImageLoader.js";
 
 const MAX = 1200;
 const MIN = 64;
 
-test('downscales a large image to fit max size, preserving aspect', () => {
-  const { width, height } = ImageLoader.downscaleDimensions(2000, 1000, MAX, MIN);
+test("downscales a large image to fit max size, preserving aspect", () => {
+  const { width, height } = ImageLoader.downscaleDimensions(
+    2000,
+    1000,
+    MAX,
+    MIN
+  );
   assert.equal(width, 1200);
   assert.equal(height, 600);
 });
 
-test('keeps an image already smaller than max unchanged', () => {
+test("keeps an image already smaller than max unchanged", () => {
   const { width, height } = ImageLoader.downscaleDimensions(600, 400, MAX, MIN);
   assert.equal(width, 600);
   assert.equal(height, 400);
 });
 
-test('upscales a tiny image to at least the minimum size', () => {
+test("upscales a tiny image to at least the minimum size", () => {
   const { width, height } = ImageLoader.downscaleDimensions(30, 20, MAX, MIN);
   assert.equal(height, 64);
   assert.equal(width, 96);
 });
 
-test('rejects non-image files and missing files', () => {
-  assert.equal(ImageLoader.isSupportedFile({ type: 'image/png' }), true);
-  assert.equal(ImageLoader.isSupportedFile({ type: 'text/plain' }), false);
+test("rejects non-image files and missing files", () => {
+  assert.equal(ImageLoader.isSupportedFile({ type: "image/png" }), true);
+  assert.equal(ImageLoader.isSupportedFile({ type: "text/plain" }), false);
   assert.equal(ImageLoader.isSupportedFile(null), false);
 });
 
-test('converts rgba pixels to luma grayscale', () => {
+test("converts rgba pixels to luma grayscale", () => {
   const data = new Uint8ClampedArray([
-    0, 0, 0, 255,   // black -> 0
-    255, 255, 255, 255, // white -> 255
+    0,
+    0,
+    0,
+    255, // black -> 0
+    255,
+    255,
+    255,
+    255, // white -> 255
   ]);
   const gray = ImageLoader.toGrayscale({ data, width: 2, height: 1 });
   assert.equal(gray.length, 2);
@@ -261,7 +293,9 @@ export class ImageLoader {
   }
 
   static isSupportedFile(file) {
-    return Boolean(file && typeof file.type === 'string' && file.type.startsWith('image/'));
+    return Boolean(
+      file && typeof file.type === "string" && file.type.startsWith("image/")
+    );
   }
 
   static toGrayscale(imageData) {
@@ -278,28 +312,30 @@ export class ImageLoader {
 
   async load(file) {
     if (!ImageLoader.isSupportedFile(file)) {
-      throw new Error('Please choose an image file.');
+      throw new Error("Please choose an image file.");
     }
     const url = URL.createObjectURL(file);
     try {
       const img = new Image();
       await new Promise((resolve, reject) => {
         img.onload = resolve;
-        img.onerror = () => reject(new Error('Could not load image.'));
+        img.onerror = () => reject(new Error("Could not load image."));
         img.src = url;
       });
       const { width, height } = ImageLoader.downscaleDimensions(
         img.naturalWidth,
         img.naturalHeight,
         this.maxSize,
-        this.minSize,
+        this.minSize
       );
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
-      const gray = ImageLoader.toGrayscale(ctx.getImageData(0, 0, width, height));
+      const gray = ImageLoader.toGrayscale(
+        ctx.getImageData(0, 0, width, height)
+      );
       return { gray, width, height };
     } finally {
       URL.revokeObjectURL(url);
@@ -325,10 +361,12 @@ git commit -m "feat: add image loader with downscale, validation, and grayscale 
 ### Task 4: EdgeDetector (Canny)
 
 **Files:**
+
 - Create: `src/EdgeDetector.js`
 - Test: `tests/edge-detector.test.js`
 
 **Interfaces:**
+
 - Produces: `EdgeDetector` constructor `{ low = 0.1, high = 0.3 }` (fractions of max gradient magnitude); method `detect({ gray, width, height })` → `{ edgeMask: Uint8Array (1=edge), directions: Float32Array (radians), width, height }`. Consumed by `App` (Task 8) and tested here with synthetic images.
 
 - [ ] **Step 1: Write the failing test**
@@ -336,9 +374,9 @@ git commit -m "feat: add image loader with downscale, validation, and grayscale 
 `tests/edge-detector.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { EdgeDetector } from '../src/EdgeDetector.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { EdgeDetector } from "../src/EdgeDetector.js";
 
 const detector = new EdgeDetector();
 
@@ -346,7 +384,7 @@ function blankGray(width, height, fill = 255) {
   return new Uint8Array(width * height).fill(fill);
 }
 
-test('detects the boundary of a black square on a white background', () => {
+test("detects the boundary of a black square on a white background", () => {
   const width = 40;
   const height = 40;
   const gray = blankGray(width, height);
@@ -363,7 +401,7 @@ test('detects the boundary of a black square on a white background', () => {
   assert.equal(directions.length, width * height);
 });
 
-test('detects a diagonal black line', () => {
+test("detects a diagonal black line", () => {
   const width = 30;
   const height = 30;
   const gray = blankGray(width, height);
@@ -371,10 +409,10 @@ test('detects a diagonal black line', () => {
   const { edgeMask } = detector.detect({ gray, width, height });
   let count = 0;
   for (let i = 0; i < edgeMask.length; i++) count += edgeMask[i];
-  assert.ok(count > 0, 'expected edges along the diagonal');
+  assert.ok(count > 0, "expected edges along the diagonal");
 });
 
-test('detects a circular outline', () => {
+test("detects a circular outline", () => {
   const width = 40;
   const height = 40;
   const cx = 19.5;
@@ -390,13 +428,17 @@ test('detects a circular outline', () => {
   const { edgeMask } = detector.detect({ gray, width, height });
   let count = 0;
   for (let i = 0; i < edgeMask.length; i++) count += edgeMask[i];
-  assert.ok(count > 0, 'expected edges along the circle');
+  assert.ok(count > 0, "expected edges along the circle");
 });
 
-test('returns an empty mask for a blank image', () => {
+test("returns an empty mask for a blank image", () => {
   const width = 20;
   const height = 20;
-  const { edgeMask } = detector.detect({ gray: blankGray(width, height), width, height });
+  const { edgeMask } = detector.detect({
+    gray: blankGray(width, height),
+    width,
+    height,
+  });
   let count = 0;
   for (let i = 0; i < edgeMask.length; i++) count += edgeMask[i];
   assert.equal(count, 0);
@@ -429,11 +471,19 @@ export class EdgeDetector {
       for (let x = 1; x < width - 1; x++) {
         const i = y * width + x;
         const gx =
-          -blurred[i - width - 1] - 2 * blurred[i - 1] - blurred[i + width - 1] +
-          blurred[i - width + 1] + 2 * blurred[i + 1] + blurred[i + width + 1];
+          -blurred[i - width - 1] -
+          2 * blurred[i - 1] -
+          blurred[i + width - 1] +
+          blurred[i - width + 1] +
+          2 * blurred[i + 1] +
+          blurred[i + width + 1];
         const gy =
-          -blurred[i - width - 1] - 2 * blurred[i - width] - blurred[i - width + 1] +
-          blurred[i + width - 1] + 2 * blurred[i + width] + blurred[i + width + 1];
+          -blurred[i - width - 1] -
+          2 * blurred[i - width] -
+          blurred[i - width + 1] +
+          blurred[i + width - 1] +
+          2 * blurred[i + width] +
+          blurred[i + width + 1];
         mag[i] = Math.hypot(gx, gy);
         dir[i] = Math.atan2(gy, gx);
       }
@@ -559,10 +609,12 @@ git commit -m "feat: add Canny edge detector with blur, sobel, nms, hysteresis"
 ### Task 5: ContourBuilder
 
 **Files:**
+
 - Create: `src/ContourBuilder.js`
 - Test: `tests/contour-builder.test.js`
 
 **Interfaces:**
+
 - Produces: `ContourBuilder` constructor `{ minStrokeLength = 10 }`; method `build({ edgeMask, width, height })` → `Stroke[]`, each `{ points: [{x,y}], minX, minY, maxX, maxY }`. Consumed by `App` (Task 8).
 
 - [ ] **Step 1: Write the failing test**
@@ -570,9 +622,9 @@ git commit -m "feat: add Canny edge detector with blur, sobel, nms, hysteresis"
 `tests/contour-builder.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { ContourBuilder } from '../src/ContourBuilder.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { ContourBuilder } from "../src/ContourBuilder.js";
 
 const builder = new ContourBuilder({ minStrokeLength: 5 });
 
@@ -580,19 +632,31 @@ function maskFrom(pointSets, width, height) {
   const edgeMask = new Uint8Array(width * height);
   for (const pts of pointSets) {
     for (const [x, y] of pts) {
-      if (x >= 0 && y >= 0 && x < width && y < height) edgeMask[y * width + x] = 1;
+      if (x >= 0 && y >= 0 && x < width && y < height)
+        edgeMask[y * width + x] = 1;
     }
   }
   return edgeMask;
 }
 
-test('turns two disconnected lines into two separate strokes', () => {
+test("turns two disconnected lines into two separate strokes", () => {
   const width = 20;
   const height = 20;
   const edgeMask = maskFrom(
-    [[[3, 2], [4, 2], [5, 2]], [[12, 10], [13, 10], [14, 10]]],
+    [
+      [
+        [3, 2],
+        [4, 2],
+        [5, 2],
+      ],
+      [
+        [12, 10],
+        [13, 10],
+        [14, 10],
+      ],
+    ],
     width,
-    height,
+    height
   );
   const strokes = builder.build({ edgeMask, width, height });
   assert.equal(strokes.length, 2);
@@ -601,7 +665,7 @@ test('turns two disconnected lines into two separate strokes', () => {
   assert.ok(strokes[0].minY < strokes[1].minY);
 });
 
-test('traces one connected diagonal path into a single ordered stroke', () => {
+test("traces one connected diagonal path into a single ordered stroke", () => {
   const width = 20;
   const height = 20;
   const points = [];
@@ -616,13 +680,19 @@ test('traces one connected diagonal path into a single ordered stroke', () => {
   assert.ok(Math.abs(last.x - 14) <= 1 && Math.abs(last.y - 14) <= 1);
 });
 
-test('drops a small blob below minStrokeLength', () => {
+test("drops a small blob below minStrokeLength", () => {
   const width = 10;
   const height = 10;
   const edgeMask = maskFrom(
-    [[[2, 2], [3, 2], [3, 3]]],
+    [
+      [
+        [2, 2],
+        [3, 2],
+        [3, 3],
+      ],
+    ],
     width,
-    height,
+    height
   );
   const strokes = builder.build({ edgeMask, width, height });
   assert.equal(strokes.length, 0);
@@ -680,16 +750,28 @@ export class ContourBuilder {
   _next(edgeMask, visited, width, height, x, y) {
     let best = null;
     for (const [dx, dy] of [
-      [-1, -1], [0, -1], [1, -1],
-      [-1, 0], [1, 0],
-      [-1, 1], [0, 1], [1, 1],
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+      [-1, 0],
+      [1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
     ]) {
       const nx = x + dx;
       const ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
       const i = ny * width + nx;
       if (!edgeMask[i] || visited[i]) continue;
-      const count = this._unvisitedNeighbors(edgeMask, visited, width, height, nx, ny);
+      const count = this._unvisitedNeighbors(
+        edgeMask,
+        visited,
+        width,
+        height,
+        nx,
+        ny
+      );
       if (!best || count < best.count) {
         best = { x: nx, y: ny, count };
       }
@@ -745,10 +827,12 @@ git commit -m "feat: link edge pixels into ordered contour strokes"
 ### Task 6: StrokePlanner
 
 **Files:**
+
 - Create: `src/StrokePlanner.js`
 - Test: `tests/stroke-planner.test.js`
 
 **Interfaces:**
+
 - Produces: `StrokePlanner` constructor `{ maxSegmentPoints = 600 }`; method `plan({ strokes, width, height })` → `PenCommand[]`, each `{ type: 'down'|'move', x, y }` with integer coordinates. Sort is top-to-bottom by bounding-box center. Consumed by `CursorPlayer` (Task 7).
 
 - [ ] **Step 1: Write the failing test**
@@ -756,9 +840,9 @@ git commit -m "feat: link edge pixels into ordered contour strokes"
 `tests/stroke-planner.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { StrokePlanner } from '../src/StrokePlanner.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { StrokePlanner } from "../src/StrokePlanner.js";
 
 function bounds(points) {
   let minX = Infinity;
@@ -774,39 +858,56 @@ function bounds(points) {
   return { points, minX, minY, maxX, maxY };
 }
 
-test('sorts strokes top-to-bottom by center Y, then center X', () => {
+test("sorts strokes top-to-bottom by center Y, then center X", () => {
   const planner = new StrokePlanner();
-  const strokeA = bounds([{ x: 4, y: 40 }, { x: 10, y: 50 }]); // centerY 45
-  const strokeB = bounds([{ x: 4, y: 0 }, { x: 10, y: 10 }]); // centerY 5
-  const commands = planner.plan({ strokes: [strokeA, strokeB], width: 100, height: 100 });
-  assert.equal(commands[0].type, 'down');
+  const strokeA = bounds([
+    { x: 4, y: 40 },
+    { x: 10, y: 50 },
+  ]); // centerY 45
+  const strokeB = bounds([
+    { x: 4, y: 0 },
+    { x: 10, y: 10 },
+  ]); // centerY 5
+  const commands = planner.plan({
+    strokes: [strokeA, strokeB],
+    width: 100,
+    height: 100,
+  });
+  assert.equal(commands[0].type, "down");
   assert.equal(commands[0].y, 0); // top stroke first
 });
 
-test('starts each stroke with a down command then moves', () => {
+test("starts each stroke with a down command then moves", () => {
   const planner = new StrokePlanner();
-  const stroke = bounds([{ x: 0, y: 0 }, { x: 5, y: 0 }, { x: 10, y: 0 }]);
+  const stroke = bounds([
+    { x: 0, y: 0 },
+    { x: 5, y: 0 },
+    { x: 10, y: 0 },
+  ]);
   const commands = planner.plan({ strokes: [stroke], width: 100, height: 100 });
   assert.deepEqual(commands, [
-    { type: 'down', x: 0, y: 0 },
-    { type: 'move', x: 5, y: 0 },
-    { type: 'move', x: 10, y: 0 },
+    { type: "down", x: 0, y: 0 },
+    { type: "move", x: 5, y: 0 },
+    { type: "move", x: 10, y: 0 },
   ]);
 });
 
-test('splits a long stroke into segments at maxSegmentPoints', () => {
+test("splits a long stroke into segments at maxSegmentPoints", () => {
   const planner = new StrokePlanner({ maxSegmentPoints: 50 });
   const points = [];
   for (let x = 0; x <= 100; x++) points.push({ x, y: 0 });
   const stroke = bounds(points);
   const commands = planner.plan({ strokes: [stroke], width: 200, height: 200 });
-  const downs = commands.filter((c) => c.type === 'down');
+  const downs = commands.filter((c) => c.type === "down");
   assert.equal(downs.length, 3); // 101 points -> 3 segments (overlapping by 1)
 });
 
-test('clamps out-of-range coordinates to canvas bounds', () => {
+test("clamps out-of-range coordinates to canvas bounds", () => {
   const planner = new StrokePlanner();
-  const stroke = bounds([{ x: -5, y: 0 }, { x: 3000, y: 0 }]);
+  const stroke = bounds([
+    { x: -5, y: 0 },
+    { x: 3000, y: 0 },
+  ]);
   const commands = planner.plan({ strokes: [stroke], width: 100, height: 100 });
   assert.equal(commands[0].x, 0);
   assert.equal(commands[1].x, 99);
@@ -850,7 +951,7 @@ export class StrokePlanner {
       for (let i = 0; i < segment.length; i++) {
         const x = this._clamp(Math.round(segment[i].x), width);
         const y = this._clamp(Math.round(segment[i].y), height);
-        commands.push({ type: i === 0 ? 'down' : 'move', x, y });
+        commands.push({ type: i === 0 ? "down" : "move", x, y });
       }
     }
   }
@@ -878,10 +979,12 @@ git commit -m "feat: plan ordered pen commands with top-to-bottom sorting"
 ### Task 7: CursorPlayer
 
 **Files:**
+
 - Create: `src/CursorPlayer.js`
 - Test: `tests/cursor-player.test.js`
 
 **Interfaces:**
+
 - Consumes: `PenCommand[]` from `StrokePlanner` (`{type:'down'|'move', x, y}` clamped ints) and a `BrushConfig`.
 - Produces: `CursorPlayer` constructor `{ ctx, inkCtx, inkCanvas, brush, width, height, speed = 120, raf = null }`; method `play(commands, { onDone } = {})`; method `tick(dtMs)` for manual simulation; fires `onDone()` exactly once after the final command is consumed. `ctx` and `inkCtx` are Canvas 2D contexts; `ink` accumulates the permanent drawing (redrawn each frame onto `ctx` on top of the pen). Consumed by `App` (Task 8).
 
@@ -890,10 +993,10 @@ git commit -m "feat: plan ordered pen commands with top-to-bottom sorting"
 `tests/cursor-player.test.js`:
 
 ```js
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { CursorPlayer } from '../src/CursorPlayer.js';
-import { BrushConfig } from '../src/BrushConfig.js';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { CursorPlayer } from "../src/CursorPlayer.js";
+import { BrushConfig } from "../src/BrushConfig.js";
 
 function makeMockCtx() {
   const calls = {
@@ -975,62 +1078,66 @@ function makePlayer(raf = null) {
   };
 }
 
-test('draws a single stroke and fires onDone once', () => {
+test("draws a single stroke and fires onDone once", () => {
   const { ink, player } = makePlayer();
   let doneCount = 0;
   const commands = [
-    { type: 'down', x: 10, y: 10 },
-    { type: 'move', x: 110, y: 10 },
+    { type: "down", x: 10, y: 10 },
+    { type: "move", x: 110, y: 10 },
   ];
   player.play(commands, { onDone: () => doneCount++ });
   player.tick(1000);
   assert.equal(doneCount, 1);
   assert.equal(ink.calls.lineTo.length, 1);
-  assert.ok(ink.calls.arc >= 1, 'pen-down should stamp a dot');
+  assert.ok(ink.calls.arc >= 1, "pen-down should stamp a dot");
 });
 
-test('lifts the pen (no ink) while flying between strokes', () => {
+test("lifts the pen (no ink) while flying between strokes", () => {
   const { ink, player } = makePlayer();
   const commands = [
-    { type: 'down', x: 0, y: 0 },
-    { type: 'move', x: 0, y: 50 },
-    { type: 'down', x: 100, y: 50 },
-    { type: 'move', x: 100, y: 0 },
+    { type: "down", x: 0, y: 0 },
+    { type: "move", x: 0, y: 50 },
+    { type: "down", x: 100, y: 50 },
+    { type: "move", x: 100, y: 0 },
   ];
   player.play(commands, {});
   player.tick(1000);
-  assert.equal(ink.calls.lineTo.length, 2, 'only the two inked segments are stroked');
-  const fly = ink.calls.lineTo.find(
-    ([x0, y0]) => Math.abs(x0 - 0) < 0.5 && Math.abs(y0 - 50) < 0.5,
+  assert.equal(
+    ink.calls.lineTo.length,
+    2,
+    "only the two inked segments are stroked"
   );
-  assert.ok(!fly, 'no ink between (0,50) and (100,50)');
+  const fly = ink.calls.lineTo.find(
+    ([x0, y0]) => Math.abs(x0 - 0) < 0.5 && Math.abs(y0 - 50) < 0.5
+  );
+  assert.ok(!fly, "no ink between (0,50) and (100,50)");
 });
 
-test('onDone fires exactly once even with repeated ticks', () => {
+test("onDone fires exactly once even with repeated ticks", () => {
   const { player } = makePlayer();
   let doneCount = 0;
   const commands = [
-    { type: 'down', x: 5, y: 5 },
-    { type: 'move', x: 55, y: 5 },
+    { type: "down", x: 5, y: 5 },
+    { type: "move", x: 55, y: 5 },
   ];
   player.play(commands, { onDone: () => doneCount++ });
   for (let i = 0; i < 10; i++) player.tick(1000);
   assert.equal(doneCount, 1);
 });
 
-test('uses a raf scheduler when provided and stops the loop on cancel', () => {
+test("uses a raf scheduler when provided and stops the loop on cancel", () => {
   let rafCallback = null;
   const raf = (cb) => {
     rafCallback = cb;
   };
   const { player } = makePlayer(raf);
   const commands = [
-    { type: 'down', x: 5, y: 5 },
-    { type: 'move', x: 55, y: 5 },
+    { type: "down", x: 5, y: 5 },
+    { type: "move", x: 55, y: 5 },
   ];
   let doneCount = 0;
   player.play(commands, { onDone: () => doneCount++ });
-  assert.ok(rafCallback, 'raf should be scheduled');
+  assert.ok(rafCallback, "raf should be scheduled");
   rafCallback(100); // first frame: dt=0 (lastTime is null)
   rafCallback(10100); // dt=10000ms at 200px/s = 2000px, enough to finish ~57px path
   assert.ok(doneCount >= 1);
@@ -1082,9 +1189,9 @@ export class CursorPlayer {
 
     this.inkCtx.lineWidth = brush.width;
     this.inkCtx.lineCap = brush.cap;
-    this.inkCtx.lineJoin = 'round';
-    this.inkCtx.strokeStyle = '#000';
-    this.inkCtx.fillStyle = '#000';
+    this.inkCtx.lineJoin = "round";
+    this.inkCtx.strokeStyle = "#000";
+    this.inkCtx.fillStyle = "#000";
   }
 
   play(commands, { onDone } = {}) {
@@ -1145,7 +1252,10 @@ export class CursorPlayer {
         this._prepNext();
       } else {
         const r = remaining;
-        this._move(this.cursor.x + (dx / dist) * r, this.cursor.y + (dy / dist) * r);
+        this._move(
+          this.cursor.x + (dx / dist) * r,
+          this.cursor.y + (dy / dist) * r
+        );
         remaining = 0;
       }
     }
@@ -1164,7 +1274,7 @@ export class CursorPlayer {
     }
     const cmd = this.commands[this.index];
     this._downAtCurrent = false;
-    if (cmd.type === 'down') {
+    if (cmd.type === "down") {
       if (this.cursor.x === cmd.x && this.cursor.y === cmd.y) {
         this.ink = true;
         this._dot(cmd.x, cmd.y);
@@ -1196,8 +1306,11 @@ export class CursorPlayer {
     const base = (this.brush.passes - 1) / 2;
     for (let p = 0; p < this.brush.passes; p++) {
       const passOffset = (p - base) * 0.6;
-      const jA = Math.sin(this._inkDistance * 0.12) * this.brush.jitter + passOffset;
-      const jB = Math.sin((this._inkDistance + dist) * 0.12) * this.brush.jitter + passOffset;
+      const jA =
+        Math.sin(this._inkDistance * 0.12) * this.brush.jitter + passOffset;
+      const jB =
+        Math.sin((this._inkDistance + dist) * 0.12) * this.brush.jitter +
+        passOffset;
       this.inkCtx.beginPath();
       this.inkCtx.moveTo(x0 + nx * jA, y0 + ny * jA);
       this.inkCtx.lineTo(x1 + nx * jB, y1 + ny * jB);
@@ -1246,11 +1359,13 @@ git commit -m "feat: animate a pen cursor drawing commands onto an ink layer"
 ### Task 8: App wiring, UI, and manual verification
 
 **Files:**
+
 - Create: `index.html`
 - Create: `styles.css`
 - Create: `src/App.js`
 
 **Interfaces:**
+
 - Consumes: `ImageLoader`, `EdgeDetector` (`detect({gray,width,height})` → `{edgeMask,...}`), `ContourBuilder` (`build({edgeMask,width,height})` → strokes), `StrokePlanner` (`plan({strokes,width,height})` → commands), `CursorPlayer` (`play(commands, {onDone})`), `BrushConfig.presets()`.
 
 - [ ] **Step 1: Write `index.html`**
@@ -1260,34 +1375,34 @@ git commit -m "feat: animate a pen cursor drawing commands onto an ink layer"
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto Doodler</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <main>
-    <h1>Auto Doodler</h1>
-    <div class="controls">
-      <input id="file-input" type="file" accept="image/*" />
-      <label for="style-select">Style</label>
-      <select id="style-select">
-        <option value="cartoon">Cartoon</option>
-        <option value="doodle">Doodle</option>
-        <option value="sketch">Sketch</option>
-      </select>
-      <button id="start-btn" disabled>Start Drawing</button>
-      <button id="download-btn" disabled>Download PNG</button>
-    </div>
-    <div id="status">Upload an image to begin.</div>
-    <canvas id="draw-canvas"></canvas>
-  </main>
-  <script type="module">
-    import { App } from './src/App.js';
-    new App();
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Doodler</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Auto Doodler</h1>
+      <div class="controls">
+        <input id="file-input" type="file" accept="image/*" />
+        <label for="style-select">Style</label>
+        <select id="style-select">
+          <option value="cartoon">Cartoon</option>
+          <option value="doodle">Doodle</option>
+          <option value="sketch">Sketch</option>
+        </select>
+        <button id="start-btn" disabled>Start Drawing</button>
+        <button id="download-btn" disabled>Download PNG</button>
+      </div>
+      <div id="status">Upload an image to begin.</div>
+      <canvas id="draw-canvas"></canvas>
+    </main>
+    <script type="module">
+      import { App } from "./src/App.js";
+      new App();
+    </script>
+  </body>
 </html>
 ```
 
@@ -1352,21 +1467,21 @@ button:disabled {
 `src/App.js`:
 
 ```js
-import { ImageLoader } from './ImageLoader.js';
-import { EdgeDetector } from './EdgeDetector.js';
-import { ContourBuilder } from './ContourBuilder.js';
-import { StrokePlanner } from './StrokePlanner.js';
-import { CursorPlayer } from './CursorPlayer.js';
-import { BrushConfig } from './BrushConfig.js';
+import { ImageLoader } from "./ImageLoader.js";
+import { EdgeDetector } from "./EdgeDetector.js";
+import { ContourBuilder } from "./ContourBuilder.js";
+import { StrokePlanner } from "./StrokePlanner.js";
+import { CursorPlayer } from "./CursorPlayer.js";
+import { BrushConfig } from "./BrushConfig.js";
 
 export class App {
   constructor() {
-    this.fileInput = document.getElementById('file-input');
-    this.styleSelect = document.getElementById('style-select');
-    this.startBtn = document.getElementById('start-btn');
-    this.downloadBtn = document.getElementById('download-btn');
-    this.statusEl = document.getElementById('status');
-    this.canvas = document.getElementById('draw-canvas');
+    this.fileInput = document.getElementById("file-input");
+    this.styleSelect = document.getElementById("style-select");
+    this.startBtn = document.getElementById("start-btn");
+    this.downloadBtn = document.getElementById("download-btn");
+    this.statusEl = document.getElementById("status");
+    this.canvas = document.getElementById("draw-canvas");
 
     this.imageLoader = new ImageLoader();
     this.edgeDetector = new EdgeDetector();
@@ -1376,27 +1491,28 @@ export class App {
     this.ctx = null;
     this._playing = false;
 
-    this.fileInput.addEventListener('change', () => this._onFile());
-    this.startBtn.addEventListener('click', () => this._onStart());
-    this.downloadBtn.addEventListener('click', () => this._onDownload());
+    this.fileInput.addEventListener("change", () => this._onFile());
+    this.startBtn.addEventListener("click", () => this._onStart());
+    this.downloadBtn.addEventListener("click", () => this._onDownload());
   }
 
   async _onFile() {
     const file = this.fileInput.files[0];
     if (!file) return;
-    this.statusEl.textContent = 'Loading image…';
+    this.statusEl.textContent = "Loading image…";
     try {
       this.current = await this.imageLoader.load(file);
       this.canvas.width = this.current.width;
       this.canvas.height = this.current.height;
-      this.ctx = this.canvas.getContext('2d');
-      this.ctx.fillStyle = '#fff';
+      this.ctx = this.canvas.getContext("2d");
+      this.ctx.fillStyle = "#fff";
       this.ctx.fillRect(0, 0, this.current.width, this.current.height);
       this.startBtn.disabled = false;
       this.downloadBtn.disabled = true;
-      this.statusEl.textContent = 'Ready. Pick a style and press Start Drawing.';
+      this.statusEl.textContent =
+        "Ready. Pick a style and press Start Drawing.";
     } catch (err) {
-      this.statusEl.textContent = err.message || 'Could not load image.';
+      this.statusEl.textContent = err.message || "Could not load image.";
     }
   }
 
@@ -1404,7 +1520,7 @@ export class App {
     if (!this.current || this._playing) return;
     this._playing = true;
     this.startBtn.disabled = true;
-    this.statusEl.textContent = 'Drawing…';
+    this.statusEl.textContent = "Drawing…";
     const { gray, width, height } = this.current;
     setTimeout(() => {
       const { edgeMask } = this.edgeDetector.detect({ gray, width, height });
@@ -1412,18 +1528,20 @@ export class App {
       if (strokes.length === 0) {
         this._playing = false;
         this.startBtn.disabled = false;
-        this.statusEl.textContent = 'No edges found. Try another image.';
+        this.statusEl.textContent = "No edges found. Try another image.";
         return;
       }
       const commands = this.strokePlanner.plan({ strokes, width, height });
-      const inkCanvas = document.createElement('canvas');
+      const inkCanvas = document.createElement("canvas");
       inkCanvas.width = width;
       inkCanvas.height = height;
       this._player = new CursorPlayer({
         ctx: this.ctx,
-        inkCtx: inkCanvas.getContext('2d'),
+        inkCtx: inkCanvas.getContext("2d"),
         inkCanvas,
-        brush: BrushConfig.presets()[this.styleSelect.value] ?? BrushConfig.presets().cartoon,
+        brush:
+          BrushConfig.presets()[this.styleSelect.value] ??
+          BrushConfig.presets().cartoon,
         width,
         height,
         speed: 120,
@@ -1433,7 +1551,7 @@ export class App {
         onDone: () => {
           this._playing = false;
           this.downloadBtn.disabled = false;
-          this.statusEl.textContent = 'Done! Download your drawing.';
+          this.statusEl.textContent = "Done! Download your drawing.";
         },
       });
     }, 0);
@@ -1442,12 +1560,12 @@ export class App {
   _onDownload() {
     this.canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'doodle.png';
+      a.download = "doodle.png";
       a.click();
       URL.revokeObjectURL(url);
-    }, 'image/png');
+    }, "image/png");
   }
 }
 ```
@@ -1462,6 +1580,7 @@ Expected: PASS — all tests across all tasks still green.
 Run: `npm start` then open `http://localhost:8080` in a browser.
 
 Verify:
+
 1. Page renders "Auto Doodler", an upload input, style select (Cartoon/Doodle/Sketch), disabled Start and Download buttons.
 2. Upload a JPEG/PNG photo. Status shows "Ready…" and Start becomes enabled.
 3. Click Start. The pen cursor flies to the first stroke, draws line-art top-to-bottom, lifts between strokes. No progress UI appears.
