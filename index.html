@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto Doodler</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1>Auto Doodler</h1>
+    <div class="controls">
+      <input id="file-input" type="file" accept="image/*" />
+      <label for="style-select">Style</label>
+      <select id="style-select">
+        <option value="cartoon">Cartoon</option>
+        <option value="doodle">Doodle</option>
+        <option value="sketch">Sketch</option>
+      </select>
+      <button id="start-btn" disabled>Start Drawing</button>
+      <button id="download-btn" disabled>Download PNG</button>
+    </div>
+    <div id="status">Upload an image to begin.</div>
+    <canvas id="draw-canvas"></canvas>
+  </main>
+  <script type="module">
+    import { App } from './src/App.js';
+    new App();
+  </script>
+</body>
+</html>
