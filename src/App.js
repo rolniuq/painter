@@ -62,13 +62,13 @@ export class App {
         return;
       }
       const commands = this.strokePlanner.plan({ strokes, width, height });
-      const inkCanvas = document.createElement('canvas');
-      inkCanvas.width = width;
-      inkCanvas.height = height;
+      this._inkCanvas = document.createElement('canvas');
+      this._inkCanvas.width = width;
+      this._inkCanvas.height = height;
       this._player = new CursorPlayer({
         ctx: this.ctx,
-        inkCtx: inkCanvas.getContext('2d'),
-        inkCanvas,
+        inkCtx: this._inkCanvas.getContext('2d'),
+        inkCanvas: this._inkCanvas,
         brush: BrushConfig.presets()[this.styleSelect.value] ?? BrushConfig.presets().cartoon,
         width,
         height,
@@ -86,6 +86,10 @@ export class App {
   }
 
   _onDownload() {
+    if (!this.ctx || !this._inkCanvas) return;
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.drawImage(this._inkCanvas, 0, 0);
     this.canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
