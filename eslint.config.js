@@ -12,6 +12,7 @@ export default {
       Image: "readonly",
       console: "readonly",
       setTimeout: "readonly",
+      clearTimeout: "readonly",
       HTMLInputElement: "readonly",
       HTMLCanvasElement: "readonly",
       HTMLImageElement: "readonly",

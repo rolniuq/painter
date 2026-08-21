@@ -43,7 +43,7 @@ After any edit, run `npm run format` and `npm run lint`, then `npm test`. A `git
   - `ContourBuilder.build({ edgeMask, width, height })` → `strokes`
   - `StrokePlanner.plan({ strokes, width, height })` → `commands`
   - `CursorPlayer.play(commands, { onDone })`
-  - `BrushConfig.presets()` keys (`doodle`, `cartoon`, `sketch`) must match the `<select>` values in `index.html`.
+  - `BrushConfig.presets()` keys (`doodle`, `cartoon`, `sketch`) must match the `[data-style]` button values in `index.html`; `CursorPlayer.CURSOR_SHAPES` keys must match the `[data-shape]` button values.
 - **Thresholds are fractions of max gradient magnitude** — `EdgeDetector` uses `highT`/`lowT` as fractions, not absolute pixel values. If you change hysteresis semantics, update the tests that pin the old-vs-new behavior.
 - **Export must produce a clean white-backed PNG without the pen cursor.** The visible canvas may show the pen while animating, but `_onDownload` repaints white and composites the ink layer. Preserve that; don't `toBlob` the live canvas.
 
