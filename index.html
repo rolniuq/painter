@@ -9,22 +9,221 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main>
-      <h1>Auto Doodler</h1>
-      <div class="controls">
-        <input id="file-input" type="file" accept="image/*" />
-        <label for="style-select">Style</label>
-        <select id="style-select">
-          <option value="cartoon">Cartoon</option>
-          <option value="doodle">Doodle</option>
-          <option value="sketch">Sketch</option>
-        </select>
-        <button id="start-btn" disabled>Start Drawing</button>
-        <button id="download-btn" disabled>Download PNG</button>
-      </div>
-      <div id="status">Upload an image to begin.</div>
+    <div class="workspace">
+      <div class="brand">Auto Doodler</div>
+      <div id="status" class="badge">Upload an image to begin.</div>
       <canvas id="draw-canvas"></canvas>
-    </main>
+    </div>
+    <div class="toolbar">
+      <div class="tool-group">
+        <label class="tool-btn labeled" for="file-input">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path
+              d="M8 10V2M4.5 5.5L8 2l3.5 3.5M2 11v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2"
+            />
+          </svg>
+          <span>Upload</span>
+        </label>
+        <input id="file-input" type="file" accept="image/*" hidden />
+      </div>
+      <div class="divider"></div>
+      <div class="tool-group" role="group" aria-label="Cursor shape">
+        <button
+          class="tool-btn icon selected"
+          data-shape="pen"
+          aria-pressed="true"
+          title="Pen"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M12 2.5 13.5 4 6 11.5 3.5 12.5 4.5 10Z" />
+          </svg>
+        </button>
+        <button
+          class="tool-btn icon"
+          data-shape="pencil"
+          aria-pressed="false"
+          title="Pencil"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M9.5 3.5 12.5 6.5 6 13H3v-3ZM8 5l3 3" />
+          </svg>
+        </button>
+        <button
+          class="tool-btn icon"
+          data-shape="marker"
+          aria-pressed="false"
+          title="Marker"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M10 2.5 13.5 6 8 11.5H5V8.5ZM4 13h8" />
+          </svg>
+        </button>
+        <button
+          class="tool-btn icon"
+          data-shape="brush"
+          aria-pressed="false"
+          title="Brush"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path
+              d="M13.5 2.5c-3 .5-6 2.5-7.5 5L4.5 11.5 3 13m1.5-1.5L6 13c2.5-1.5 6-4.5 7.5-10.5Z"
+            />
+          </svg>
+        </button>
+        <button
+          class="tool-btn icon"
+          data-shape="crayon"
+          aria-pressed="false"
+          title="Crayon"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M11 2.5 13.5 5 5.5 13H3v-2.5ZM9.5 4 12 6.5" />
+          </svg>
+        </button>
+        <button
+          class="tool-btn icon"
+          data-shape="calligraphy"
+          aria-pressed="false"
+          title="Calligraphy"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M13.5 2.5 6 10l-2.5 3.5L2 15m4-5 3 3M13.5 2.5 10 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="divider"></div>
+      <div class="tool-group segmented" role="group" aria-label="Drawing style">
+        <button
+          class="seg-btn selected"
+          data-style="cartoon"
+          aria-pressed="true"
+        >
+          Cartoon
+        </button>
+        <button class="seg-btn" data-style="doodle" aria-pressed="false">
+          Doodle
+        </button>
+        <button class="seg-btn" data-style="sketch" aria-pressed="false">
+          Sketch
+        </button>
+      </div>
+      <div class="divider"></div>
+      <div class="tool-group colors" role="group" aria-label="Ink color">
+        <button
+          class="swatch selected"
+          data-color="#000000"
+          style="--c: #000000"
+          aria-label="Black"
+          aria-pressed="true"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#ef4444"
+          style="--c: #ef4444"
+          aria-label="Red"
+          aria-pressed="false"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#f97316"
+          style="--c: #f97316"
+          aria-label="Orange"
+          aria-pressed="false"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#eab308"
+          style="--c: #eab308"
+          aria-label="Yellow"
+          aria-pressed="false"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#22c55e"
+          style="--c: #22c55e"
+          aria-label="Green"
+          aria-pressed="false"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#3b82f6"
+          style="--c: #3b82f6"
+          aria-label="Blue"
+          aria-pressed="false"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#8b5cf6"
+          style="--c: #8b5cf6"
+          aria-label="Purple"
+          aria-pressed="false"
+        ></button>
+        <button
+          class="swatch"
+          data-color="#ec4899"
+          style="--c: #ec4899"
+          aria-label="Pink"
+          aria-pressed="false"
+        ></button>
+        <label class="swatch custom" for="custom-color" title="Custom color">
+          <input id="custom-color" type="color" value="#000000" />
+        </label>
+      </div>
+      <div class="divider"></div>
+      <div class="tool-group" role="group" aria-label="Pen size">
+        <button
+          class="tool-btn dot"
+          data-size="thin"
+          aria-pressed="false"
+          title="Thin"
+        >
+          <span class="dot s1"></span>
+        </button>
+        <button
+          class="tool-btn dot selected"
+          data-size="medium"
+          aria-pressed="true"
+          title="Medium"
+        >
+          <span class="dot s2"></span>
+        </button>
+        <button
+          class="tool-btn dot"
+          data-size="thick"
+          aria-pressed="false"
+          title="Thick"
+        >
+          <span class="dot s3"></span>
+        </button>
+      </div>
+      <div class="divider"></div>
+      <div class="tool-group speed" title="Draw speed (px/s)">
+        <input
+          id="speed-range"
+          type="range"
+          min="40"
+          max="300"
+          step="10"
+          value="120"
+        />
+        <span id="speed-value">120</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="tool-group actions">
+        <button id="start-btn" disabled>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M5 3l8 5-8 5Z" />
+          </svg>
+          Start Drawing
+        </button>
+        <button id="download-btn" disabled>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2 13h12" />
+          </svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
     <script type="module">
       import { App } from "./src/App.js";
       new App();
