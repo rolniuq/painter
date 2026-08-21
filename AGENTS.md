@@ -50,7 +50,7 @@ After any edit, run `npm run format` and `npm run lint`, then `npm test`. A `git
 ## Conventions
 
 - **Formatting:** Prettier defaults (2-space indent, double quotes, trailing commas `es5`). Enforced by EditorConfig + Prettier.
-- **Style:** Doodle / cartoon / sketch presets in `BrushConfig.js`. Adding a style means adding a preset there **and** an `<option>` in `index.html`.
+- **Style:** Doodle / cartoon / sketch presets in `BrushConfig.js`. Adding a style means adding a preset there **and** a `[data-style]` button in `index.html`.
 - **Tests:** one `tests/*.test.js` per module, using `node:test` + `node:assert` (no test framework). Cover edge cases (empty input, extreme aspect ratios, cancellation) — tests should pin real behavior, not just "no crash".
 
 ## Git conventions
