@@ -1,3 +1,66 @@
+export const CURSOR_SHAPES = {
+  pen(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(6, 0);
+    ctx.lineTo(-4, -4);
+    ctx.lineTo(-4, 4);
+    ctx.closePath();
+    ctx.fill();
+  },
+  pencil(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(2, -2.5);
+    ctx.lineTo(-6, -2.5);
+    ctx.lineTo(-6, 2.5);
+    ctx.lineTo(2, 2.5);
+    ctx.closePath();
+    ctx.fill();
+  },
+  marker(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(9, -1);
+    ctx.lineTo(3, -3.5);
+    ctx.lineTo(-6, -3.5);
+    ctx.lineTo(-6, 3.5);
+    ctx.lineTo(3, 3.5);
+    ctx.lineTo(9, 1);
+    ctx.closePath();
+    ctx.fill();
+  },
+  brush(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(9, 0);
+    ctx.lineTo(1, -3);
+    ctx.lineTo(-6, -2);
+    ctx.lineTo(-6, 2);
+    ctx.lineTo(1, 3);
+    ctx.closePath();
+    ctx.fill();
+  },
+  crayon(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(9, -1.5);
+    ctx.lineTo(4, -3.5);
+    ctx.lineTo(-6, -3.5);
+    ctx.lineTo(-6, 3.5);
+    ctx.lineTo(4, 3.5);
+    ctx.lineTo(9, 1.5);
+    ctx.closePath();
+    ctx.fill();
+  },
+  calligraphy(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(-2, -5);
+    ctx.lineTo(-6, -5);
+    ctx.lineTo(-6, 5);
+    ctx.lineTo(-2, 5);
+    ctx.closePath();
+    ctx.fill();
+  },
+};
+
 export class CursorPlayer {
   constructor({
     ctx,
@@ -8,6 +71,8 @@ export class CursorPlayer {
     height,
     speed = 120,
     raf = null,
+    color = "#000",
+    cursorShape = "pen",
   }) {
     this.ctx = ctx;
     this.inkCtx = inkCtx;
@@ -17,6 +82,8 @@ export class CursorPlayer {
     this.height = height;
     this.speed = speed;
     this.raf = raf;
+    this.color = color;
+    this.cursorShape = cursorShape;
 
     this.commands = [];
     this.onDone = null;
@@ -34,8 +101,8 @@ export class CursorPlayer {
     this.inkCtx.lineWidth = brush.width;
     this.inkCtx.lineCap = brush.cap;
     this.inkCtx.lineJoin = "round";
-    this.inkCtx.strokeStyle = "#000";
-    this.inkCtx.fillStyle = "#000";
+    this.inkCtx.strokeStyle = this.color;
+    this.inkCtx.fillStyle = this.color;
   }
 
   play(commands, { onDone } = {}) {
@@ -172,15 +239,11 @@ export class CursorPlayer {
   _paintFrame() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     if (this.inkCanvas) this.ctx.drawImage(this.inkCanvas, 0, 0);
+    const draw = CURSOR_SHAPES[this.cursorShape] ?? CURSOR_SHAPES.pen;
     this.ctx.save();
     this.ctx.translate(this.cursor.x, this.cursor.y);
     this.ctx.rotate(this._lastAngle);
-    this.ctx.beginPath();
-    this.ctx.moveTo(6, 0);
-    this.ctx.lineTo(-4, -4);
-    this.ctx.lineTo(-4, 4);
-    this.ctx.closePath();
-    this.ctx.fill();
+    draw(this.ctx);
     this.ctx.restore();
   }
 }

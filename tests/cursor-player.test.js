@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CursorPlayer } from "../src/CursorPlayer.js";
+import { CursorPlayer, CURSOR_SHAPES } from "../src/CursorPlayer.js";
 import { BrushConfig } from "../src/BrushConfig.js";
 
 function makeMockCtx() {
@@ -18,6 +18,8 @@ function makeMockCtx() {
     restore: 0,
     translate: [],
     rotate: [],
+    strokeStyle: null,
+    fillStyle: null,
   };
   return {
     calls,
@@ -63,8 +65,12 @@ function makeMockCtx() {
     set lineWidth(v) {},
     set lineCap(v) {},
     set lineJoin(v) {},
-    set strokeStyle(v) {},
-    set fillStyle(v) {},
+    set strokeStyle(v) {
+      calls.strokeStyle = v;
+    },
+    set fillStyle(v) {
+      calls.fillStyle = v;
+    },
   };
 }
 
@@ -150,4 +156,73 @@ test("uses a raf scheduler when provided and stops the loop on cancel", () => {
   rafCallback(100); // first frame: dt=0 (lastTime is null)
   rafCallback(10100); // dt=10000ms at 200px/s = 2000px, enough to finish ~57px path
   assert.ok(doneCount >= 1);
+});
+
+test("exposes six known cursor sprites", () => {
+  for (const id of [
+    "pen",
+    "pencil",
+    "marker",
+    "brush",
+    "crayon",
+    "calligraphy",
+  ]) {
+    assert.equal(typeof CURSOR_SHAPES[id], "function", `${id} missing`);
+  }
+});
+
+test("uses the requested ink color", () => {
+  const ink = makeMockCtx();
+  const visible = makeMockCtx();
+  new CursorPlayer({
+    ctx: visible,
+    inkCtx: ink,
+    inkCanvas: {},
+    brush: BrushConfig.presets().cartoon,
+    width: 100,
+    height: 100,
+    color: "#ff0000",
+  });
+  assert.equal(ink.calls.strokeStyle, "#ff0000");
+  assert.equal(ink.calls.fillStyle, "#ff0000");
+});
+
+test("defaults to black ink", () => {
+  const ink = makeMockCtx();
+  const visible = makeMockCtx();
+  new CursorPlayer({
+    ctx: visible,
+    inkCtx: ink,
+    inkCanvas: {},
+    brush: BrushConfig.presets().cartoon,
+    width: 100,
+    height: 100,
+  });
+  assert.equal(ink.calls.strokeStyle, "#000");
+  assert.equal(ink.calls.fillStyle, "#000");
+});
+
+test("unknown cursor shape falls back to pen without crashing", () => {
+  const ink = makeMockCtx();
+  const visible = makeMockCtx();
+  const player = new CursorPlayer({
+    ctx: visible,
+    inkCtx: ink,
+    inkCanvas: {},
+    brush: BrushConfig.presets().cartoon,
+    width: 100,
+    height: 100,
+    cursorShape: "bogus",
+  });
+  let doneCount = 0;
+  player.play(
+    [
+      { type: "down", x: 5, y: 5 },
+      { type: "move", x: 55, y: 5 },
+    ],
+    { onDone: () => doneCount++ }
+  );
+  player.tick(1000);
+  assert.equal(doneCount, 1);
+  assert.ok(visible.calls.fill >= 1, "fallback sprite should render");
 });
