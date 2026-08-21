@@ -28,4 +28,14 @@ export class BrushConfig {
       }),
     };
   }
+
+  static SIZE_FACTORS = { thin: 0.6, medium: 1, thick: 1.8 };
+
+  static resolve(style, size) {
+    const presets = BrushConfig.presets();
+    const base = presets[style] ?? presets.cartoon;
+    const factor =
+      BrushConfig.SIZE_FACTORS[size] ?? BrushConfig.SIZE_FACTORS.medium;
+    return { ...base, width: Math.round(base.width * factor * 10) / 10 };
+  }
 }
